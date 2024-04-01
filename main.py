@@ -106,6 +106,8 @@ async def load_into_db(year="112", semester="2"):
             for i in range(1, len(day_course_rows)):
                 columns_row = day_course_rows[i].find_all("td")
                 data_dict = {}
+                data_dict["學年度"] = year
+                data_dict["學期"] = semester
                 for th, td in zip(th_row, columns_row):
                     if th.text.strip() == "上課節次+地點":
                         data_dict["上課節次地點"] = td.text.strip()
@@ -114,17 +116,17 @@ async def load_into_db(year="112", semester="2"):
                     else:
                         data_dict[th.text.strip()] = td.text.strip()
 
-                columns = ", ".join("學年度").join("學期").join(data_dict.keys())
+                columns = ", ".join(data_dict.keys())
 
-                print(columns)
-
-                data_dict["學年度"] = year
-                data_dict["學期"] = semester
-
-                print("\n\n", len(data_dict))
+                # print(columns)
+                # print("\n\n", len(data_dict))
 
                 placeholders = ", ".join(["?"] * len(data_dict))
-                insert_sql = f"INSERT INTO courses ({columns}) VALUES ({placeholders})"
+
+                # print()
+                # print(data_dict)
+
+                insert_sql = f"INSERT OR IGNORE INTO courses ({columns}) VALUES ({placeholders})"
                 c.execute(insert_sql, list(data_dict.values()))
 
                 # update_sql = f"UPDATE courses SET 學年度={year}, 學期={semester} WHERE 課程代碼=課程代碼;"
