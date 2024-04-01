@@ -215,16 +215,21 @@ async def update_db_periodically():
         with Timer("load_into_db"):
             await load_into_db(112, 2)
 
-            await load_into_db(112, 1)
+            # await load_into_db(112, 1)
             # await load_into_db(111, 2)
             # await load_into_db(111, 1)
             # await load_into_db(110, 2)
             # await load_into_db(110, 1)
             print(
                 f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] course data updated.")
-        await asyncio.sleep(30)  # Update every 30 seconds
+        await asyncio.sleep(10)  # Update every 30 seconds
 
 
 @app.on_event("startup")
 async def startup_event():
     asyncio.create_task(update_db_periodically())
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
