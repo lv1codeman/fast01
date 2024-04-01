@@ -180,7 +180,10 @@ async def selectdb(
         FROM courses
         WHERE 1=1
     """
-
+    if year:
+        query += f" AND 學年度 = '{year}'"
+    if semester:
+        query += f" AND 學期 = '{semester}'"
     if crsid:
         query += f" AND 課程代碼 = '{crsid}'"
     if crsclass:
