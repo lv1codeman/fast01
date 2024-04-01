@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Query</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+    <h1>Course Query</h1>
+    <div id="result"></div>
+    <script>
+        $(document).ready(function () {
+            $("#queryBtn").click(function () {
+                var year = $("#year").val();
+                var semester = $("#semester").val();
+                var crsid = $("#crsid").val();
+                var crsclass = $("#crsclass").val();
+                var crsnm = $("#crsnm").val();
+                var is_all_eng = $("#is_all_eng").val();
+                var is_dis_learn = $("#is_dis_learn").val();
+                var crslimit = $("#crslimit").val();
+                var tchnm = $("#tchnm").val();
+                var week = $("#week").val();
+
+                var data = {
+                    "year": year,
+                    "semester": semester,
+                    "crsid": crsid,
+                    "crsclass": crsclass,
+                    "crsnm": crsnm,
+                    "is_all_eng": is_all_eng,
+                    "is_dis_learn": is_dis_learn,
+                    "crslimit": crslimit,
+                    "tchnm": tchnm,
+                    "week": week
+                };
+
+                $.ajax({
+                    type: "POST",
+                    url: "http://localhost:8000/query/",
+                    contentType: "application/json",
+                    data: JSON.stringify(data),
+                    success: function (response) {
+                        $("#result").html(JSON.stringify(response, null, 2));
+                    },
+                    error: function (xhr, status, error) {
+                        console.error(xhr.responseText);
+                    }
+                });
+            });
+        });
+    </script>
+    <label for="year">Year:</label>
+    <input type="text" id="year" name="year"><br><br>
+    <label for="semester">Semester:</label>
+    <input type="text" id="semester" name="semester"><br><br>
+    <label for="crsid">Course ID:</label>
+    <input type="text" id="crsid" name="crsid"><br><br>
+    <label for="crsclass">Course Class:</label>
+    <input type="text" id="crsclass" name="crsclass"><br><br>
+    <label for="crsnm">Course Name:</label>
+    <input type="text" id="crsnm" name="crsnm"><br><br>
+    <label for="is_all_eng">Is English:</label>
+    <input type="text" id="is_all_eng" name="is_all_eng"><br><br>
+    <label for="is_dis_learn">Is Distance Learning:</label>
+    <input type="text" id="is_dis_learn" name="is_dis_learn"><br><br>
+    <label for="crslimit">Course Limit:</label>
+    <input type="text" id="crslimit" name="crslimit"><br><br>
+    <label for="tchnm">Teacher Name:</label>
+    <input type="text" id="tchnm" name="tchnm"><br><br>
+    <label for="week">Week:</label>
+    <input type="text" id="week" name="week"><br><br>
+    <button id="queryBtn">Query</button>
+</body>
+
+</html>
