@@ -144,19 +144,20 @@ async def read_root():
 
 @app.post("/query/")
 async def query_courses(course_query: CourseQuery):
-    res = await selectdb(
-        year=course_query.year,
-        semester=course_query.semester,
-        crsid=course_query.crsid,
-        crsclass=course_query.crsclass,
-        crsnm=course_query.crsnm,
-        is_all_eng=course_query.is_all_eng,
-        is_dis_learn=course_query.is_dis_learn,
-        crslimit=course_query.crslimit,
-        tchnm=course_query.tchnm,
-        week=course_query.week,
-    )
-    return {"courses": res}
+    with Timer("selectdb"):
+        res = await selectdb(
+            year=course_query.year,
+            semester=course_query.semester,
+            crsid=course_query.crsid,
+            crsclass=course_query.crsclass,
+            crsnm=course_query.crsnm,
+            is_all_eng=course_query.is_all_eng,
+            is_dis_learn=course_query.is_dis_learn,
+            crslimit=course_query.crslimit,
+            tchnm=course_query.tchnm,
+            week=course_query.week,
+        )
+    return res
 
 
 async def selectdb(
@@ -171,6 +172,8 @@ async def selectdb(
     tchnm="",
     week="",
 ):
+    # await load_into_db(year, semester)
+
     conn = sqlite3.connect("database.sqlite3")
     cursor = conn.cursor()
     query = """
@@ -185,7 +188,7 @@ async def selectdb(
     if semester:
         query += f" AND 學期 = '{semester}'"
     if crsid:
-        query += f" AND 課程代碼 = '{crsid}'"
+        query += f" AND 課程代碼 like '%{crsid}%'"
     if crsclass:
         query += f" AND 開課班別 = '{crsclass}'"
     if crslimit:
@@ -214,19 +217,21 @@ async def update_db_periodically():
             f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] course data update start.....")
         with Timer("load_into_db"):
             await load_into_db(112, 2)
-
             # await load_into_db(112, 1)
             # await load_into_db(111, 2)
             # await load_into_db(111, 1)
             # await load_into_db(110, 2)
             # await load_into_db(110, 1)
+            # await load_into_db(109, 2)
+            # await load_into_db(109, 1)
             print(
                 f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] course data updated.")
-        await asyncio.sleep(10)  # Update every 30 seconds
+        await asyncio.sleep(30)  # Update every 30 seconds
 
 
 @app.on_event("startup")
 async def startup_event():
+    print("start....")
     asyncio.create_task(update_db_periodically())
 
 
